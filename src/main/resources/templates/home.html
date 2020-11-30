@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <!--==================================================================-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!--==================================================================-->
+
+    <style>
+        .mid {
+            width: 600px;
+            height: 100px;
+            padding: 100px;
+            position: relative;
+            margin: auto;
+        }
+
+        p {text-align: center;}
+
+        .horizontal-button {
+            width: 100%;
+        }
+
+        .custom-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <!--==================================================================-->
+        <header>
+            <div class="navbar navbar-dark bg-dark shadow-sm">
+                <div class="container d-flex justify-content-between">
+                    <a href="/home" class="navbar-brand d-flex align-items-center"><strong>Home</strong></a>
+                    <button class="custom-button" @Click="showPerson(); getAllPerson();">Person</button>  <!--GETALLPERSON APİ den METHOD ADI-->
+                    <form th:action="@{/logout}" method="post">
+                        <input class="custom-button" type="submit" value="Sign Out" />
+                    </form>
+                </div>
+            </div>
+        </header>
+        <!--==================================================================-->
+
+        <p class="mid" v-if="tempVal == 0">Hoşgeldiniz, İlgili Butona Basınız</p>
+
+        <table class="table">
+
+            <thead>
+                <tr v-if="tempVal == 1">
+                    <th scope="col">Person Name</th>
+                    <th scope="col">Person Surname</th>
+                    <th scope="col">Person Age</th>
+                    <th scope="col">Details</th>
+                </tr>
+            </thead>
+
+            <tbody v-if="tempVal == 1" v-for="person in person">
+                <tr>
+                    <td>{{person.name}}</td>
+                    <td>{{person.surname}}</td>
+                    <td>{{person.age}}</td>
+                    <td>
+                        <button class="btn btn-sm btn-success" @Click="openPersonDetails(person.id)">Details</button>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+        <button v-if="tempVal == 1" class="btn btn-sm btn-success horizontal-button" @Click="addNewPerson()">Add New Person</button>
+    </div>
+
+    <!--==================================================================-->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!--==================================================================-->
+
+</body>
+
+<script>
+
+    new Vue({
+        el: '#app',
+        data: {
+            person: [],
+            tempVal: 0
+        },
+        methods: {
+            getAllPerson() {
+                axios.get('http://localhost:8080/api/get/getAllPerson')
+                    .then(function (response) {
+                        this.person = response.data;
+                    }.bind(this))
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+
+            showPerson() {
+                this.tempVal = 1;
+            },
+            openPersonDetails(id) {
+                window.location = "/detailPerson/" + id;
+            },
+            addNewPerson() {
+                window.location = "/addPerson/";
+            }
+        }
+    });
+
+</script>
+
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details Of Person</title>
+    <!--==================================================================-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!--==================================================================-->
+    <style>
+        .mid {
+            width: 600px;
+            height: 300px;
+            padding: 20px;
+            position: relative;
+            margin: auto;
+        }
+
+        .horizontal-mid {
+            margin: auto;
+            width: 25%;
+        }
+
+        .inner-div1 {
+            width: 50%;
+            margin-right: 0px;
+            float: left;
+            padding: 20px 0px;
+        }
+
+        .inner-div2 {
+            width: 50%;
+            margin-right: 0px;
+            float: left;
+            padding: 20px 0px;
+        }
+
+        .custom-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!--==================================================================-->
+        <header>
+            <div class="navbar navbar-dark bg-dark shadow-sm">
+                <div class="container d-flex justify-content-between">
+                    <a href="/home" class="navbar-brand d-flex align-items-center"><strong>Home</strong></a>
+                    <form th:action="@{/logout}" method="post">
+                        <input  class="custom-button" type="submit" value="Sign Out" />
+                    </form>
+                </div>
+            </div>
+        </header>
+
+
+        <!--==================================================================-->
+        <input type="text" hidden style="display: none" th:value="${personId}" id="personId" />
+        <!--==================================================================-->
+
+        <div class="mid">
+            <div class="form-group">
+                <label for="exampleFormControlInput1" >Person's Name</label>
+                <input type="text" class="form-control" v-model="person.name">
+
+                <label for="exampleFormControlInput1">Person's Surname</label>
+                <input type="text" class="form-control" v-model="person.surname">
+
+                <label for="exampleFormControlInput1">Person's Age</label>
+                <input type="text" class="form-control" v-model="person.age">
+
+                <div class="horizontal-mid">
+                    <div class="inner-div1">
+
+                        <button class="btn btn-sm btn-success" @Click="updatePerson(person)">Update Author</button>
+                    </div>
+                    <div class="inner-div2">
+                        <button class="btn btn-sm btn-danger" @Click="deletePerson()">Delete Author</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--==================================================================-->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!--==================================================================-->
+</body>
+<script>
+
+    new Vue({
+        el: '#app',
+        data: {
+            person: [],
+            
+
+        },
+        mounted() {
+            this.getPersonDetails();
+        },
+        methods: {
+            getPersonDetails() {
+                axios.get('http://localhost:8080/api/get/getPersonById/' + document.getElementById("personId").value)
+                    .then(function (response) {
+                        this.person = response.data;
+                    }.bind(this))
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            deletePerson() {
+                if (confirm('Kişiyi silmek istediğinize emin misiniz?')) {
+                    axios({
+                        method: 'post',
+                        url: '/api/admin/deletePerson',
+                        data: {
+                            id : document.getElementById("personId").value  //personId önemli Yer
+                        }
+                    }).then(function (response) {
+                        if (response.data == "OK") {
+                            alert("kişi Silindi!")
+                        } else {
+                            alert("Silme İşlemi Başarısız!" + response)
+                        }
+                    });
+                } else {
+                    console.log('Kişi veri tabanından silinmedi.');
+                }
+            },
+            updatePerson(person) {
+                if (confirm('Bu kişinin bilgilerini güncellemek istediğinize emin misiniz?')) {
+                    axios({
+                        method: 'post',
+                        url: '/api/admin/updatePerson',
+                        data: {
+                            id: person.id,
+                            name : person.name,
+                            surname: person.surname,
+                            age: person.age
+                        }
+                    }).then(function (response) {
+                        if (response.data == "OK") {
+                            alert("Kişi Bilgileri Güncellendi!")
+                        } else {
+                            alert("Güncelleme İşlemi Başarısız!" + response)
+                        }
+                    });
+                } else {
+                    console.log('Kişi bilgileri güncellenemedi.');
+                }
+            }
+
+        }
+    });
+
+</script>
+
+</html>

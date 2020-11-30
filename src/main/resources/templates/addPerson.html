@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Person</title>
+    <!--==================================================================-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!--==================================================================-->
+
+    <style>
+        .mid {
+            width: 600px;
+            height: 300px;
+            padding: 20px;
+            position: relative;
+            margin: auto;
+        }
+
+        .horizontal-mid {
+            margin: auto;
+            width: 15%;
+        }
+
+        .custom-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <!--==================================================================-->
+        <header>
+            <div class="navbar navbar-dark bg-dark shadow-sm">
+                <div class="container d-flex justify-content-between">
+                    <a href="/home" class="navbar-brand d-flex align-items-center"><strong>Home</strong></a>
+                    <form th:action="@{/logout}" method="post">
+                        <input  class="custom-button" type="submit" value="Sign Out" />
+                    </form>
+                </div>
+            </div>
+        </header>
+        <!--==================================================================-->
+
+
+        <div class="mid">
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Author Name</label>
+                <input type="text" class="form-control" v-model="name">
+
+                <label for="exampleFormControlInput1">Author Surname</label>
+                <input type="text" class="form-control" v-model="surname">
+
+                <label for="exampleFormControlInput1">Person's Age</label>
+                <input type="text" class="form-control" v-model="age">
+
+                <div class="horizontal-mid">
+                    <button class="btn btn-sm btn-success" @Click="addPerson()">Add Person</button>
+                </div>
+            </div>
+        </div>
+
+        <!--==================================================================-->
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <!--==================================================================-->
+    </div>
+</body>
+
+<script>
+
+    new Vue({
+        el: '#app',
+        data: {
+            name: "",
+            surname: "",
+            age: []
+        },
+        methods: {
+            addPerson() {
+                axios({
+                    method: 'post',
+                    url: '/api/admin/addPerson',
+                    data: {
+                        name: this.name,
+                        surname: this.surname,
+                        age: this.age
+
+                    }
+                }).then(function (response) {
+                    if (response.data == "OK") {
+                        alert("Person Added")
+                    } else {
+                        alert("Unsuccessful! Try Again.")
+                    }
+                });
+            }
+        }
+    });
+
+</script>
+
+</html>
